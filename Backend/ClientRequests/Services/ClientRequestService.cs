@@ -58,11 +58,19 @@ public class ClientRequestService : IClientRequestService
     }
 
     public async Task<RequestResponseDto> CreateAsync(
-     CreateRequestDto dto,
-     CancellationToken cancellationToken = default)
+    CreateRequestDto dto,
+    CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(dto.ClientName) ||
+            string.IsNullOrWhiteSpace(dto.Title) ||
+            string.IsNullOrWhiteSpace(dto.Description))
+        {
+            throw new ArgumentException(
+                "Client name, title and description cannot be empty.");
+        }
+
         var sequenceNumber = await _context.Database
-            .SqlQuery<int>($"""SELECT nextval('"ClientRequestTicketSequence"')::int AS "Value" """)
+                .SqlQuery<int>($"""SELECT nextval('"ClientRequestTicketSequence"')::int AS "Value" """)
             .SingleAsync(cancellationToken);
 
         var now = DateTime.UtcNow;
