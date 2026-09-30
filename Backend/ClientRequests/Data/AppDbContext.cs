@@ -16,6 +16,10 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasSequence<int>("ClientRequestTicketSequence")
+            .StartsAt(1)
+            .IncrementsBy(1);
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }

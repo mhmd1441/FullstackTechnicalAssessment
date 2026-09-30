@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ClientRequests.Data.Configurations;
 
-public class ClientRequestConfiguration: IEntityTypeConfiguration<ClientRequest>
+public class ClientRequestConfiguration : IEntityTypeConfiguration<ClientRequest>
 {
-    public void Configure(EntityTypeBuilder<Models.ClientRequest> builder)
+    public void Configure(EntityTypeBuilder<ClientRequest> builder)
     {
+        builder.ToTable("ClientRequests");
+
         builder.HasKey(r => r.Id);
 
         builder.Property(r => r.TicketNumber)
