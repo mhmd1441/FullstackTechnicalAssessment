@@ -1,24 +1,25 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function LoginPage() {
-  const navigate = useNavigate()
+function LoginPage({ onLogin }) {
+  const navigate = useNavigate();
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    if (email === 'najahakworld@gmail.com' && password === 'najah123') {
-      sessionStorage.setItem('isAuthenticated', 'true')
-      navigate('/dashboard')
-      return
+    if (email === "najahakworld@gmail.com" && password === "najah123") {
+      sessionStorage.setItem("isAuthenticated", "true");
+      onLogin();
+      navigate("/dashboard");
+      return;
     }
 
-    setError('Invalid email or password.')
-  }
+    setError("Invalid email or password.");
+  };
 
   return (
     <div>
@@ -52,7 +53,7 @@ function LoginPage() {
         <button type="submit">Sign in</button>
       </form>
     </div>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;

@@ -1,21 +1,28 @@
+import { useState } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import './App.css'
 
 function App() {
-  const isAuthenticated =
-    sessionStorage.getItem('isAuthenticated') === 'true'
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => sessionStorage.getItem('isAuthenticated') === 'true'
+  )
 
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route
+        path="/login"
+        element={
+          <LoginPage onLogin={() => setIsAuthenticated(true)} />
+        }
+      />
 
       <Route
         path="/dashboard"
         element={
           isAuthenticated
-            ? <DashboardPage />
+            ? <DashboardPage onLogout={() => setIsAuthenticated(false)} />
             : <Navigate to="/login" replace />
         }
       />
