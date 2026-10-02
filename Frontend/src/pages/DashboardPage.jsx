@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RequestTable from "../components/RequestTable";
 import CreateRequestModal from "../components/CreateRequestModal";
@@ -12,7 +12,7 @@ function DashboardPage({ onLogout }) {
   const navigate = useNavigate();
 
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [page, setPage] = useState(1);
@@ -21,42 +21,25 @@ function DashboardPage({ onLogout }) {
   const [updatingId, setUpdatingId] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const loadRequests = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const data = await getRequests(page, 10, status);
-
-      setRequests(data.items);
-      setTotalPages(data.totalPages);
-      setTotalCount(data.totalCount);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, status]);
-
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
     async function fetchRequests() {
       try {
-        const data = await getRequests(page, 10, status);
+        const data = await getRequests(page, 10, status, controller.signal);
 
-        if (!cancelled) {
-          setRequests(data.items);
-          setTotalPages(data.totalPages);
-          setTotalCount(data.totalCount);
-          setError("");
-        }
+        if (controller.signal.aborted) return;
+
+        setRequests(data.items);
+        setTotalPages(data.totalPages);
+        setTotalCount(data.totalCount);
+        setError("");
       } catch (err) {
-        if (!cancelled) {
+        if (err.name !== "AbortError") {
           setError(err.message);
         }
       } finally {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           setLoading(false);
         }
       }
@@ -65,7 +48,7 @@ function DashboardPage({ onLogout }) {
     fetchRequests();
 
     return () => {
-      cancelled = true;
+      controller.abort();
     };
   }, [page, status]);
 
@@ -89,15 +72,35 @@ function DashboardPage({ onLogout }) {
   };
 
   const handleCreate = async (form) => {
-    await createRequest(form);
+    const createdRequest = await createRequest(form);
 
+    setStatus("");
     setPage(1);
-    await loadRequests();
+
+    setRequests((current) => {
+      const updated = [createdRequest, ...current];
+      return updated.slice(0, 10);
+    });
+
+    const newTotal = totalCount + 1;
+    setTotalCount(newTotal);
+    setTotalPages(Math.max(1, Math.ceil(newTotal / 10)));
   };
 
   const handleStatusFilter = (event) => {
+    setLoading(true);
     setStatus(event.target.value);
     setPage(1);
+  };
+
+  const handlePreviousPage = () => {
+    setLoading(true);
+    setPage((current) => current - 1);
+  };
+
+  const handleNextPage = () => {
+    setLoading(true);
+    setPage((current) => current + 1);
   };
 
   const handleLogout = () => {
@@ -174,7 +177,7 @@ function DashboardPage({ onLogout }) {
               <button
                 type="button"
                 disabled={page === 1}
-                onClick={() => setPage((current) => current - 1)}
+                onClick={handlePreviousPage}
               >
                 Previous
               </button>
@@ -186,7 +189,7 @@ function DashboardPage({ onLogout }) {
               <button
                 type="button"
                 disabled={page === totalPages}
-                onClick={() => setPage((current) => current + 1)}
+                onClick={handleNextPage}
               >
                 Next
               </button>

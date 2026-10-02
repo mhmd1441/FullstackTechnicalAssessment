@@ -19,7 +19,14 @@ public class ClientRequestConfiguration : IEntityTypeConfiguration<ClientRequest
         builder.HasIndex(r => r.TicketNumber)
             .IsUnique();
 
-        builder.HasIndex(r => new { r.Status, r.CreatedAt });
+        builder.HasIndex(r => r.CreatedAt);
+
+        builder.HasIndex(r => new
+        {
+            r.Status,
+            r.CreatedAt
+        });
+
 
         builder.Property(r => r.ClientName)
             .IsRequired()

@@ -17,7 +17,12 @@ async function handleResponse(response) {
   throw new Error(message)
 }
 
-export async function getRequests(page = 1, pageSize = 10, status = '') {
+export async function getRequests(
+  page = 1,
+  pageSize = 10,
+  status = '',
+  signal
+) {
   const params = new URLSearchParams({
     page: page.toString(),
     pageSize: pageSize.toString(),
@@ -28,8 +33,9 @@ export async function getRequests(page = 1, pageSize = 10, status = '') {
   }
 
   const response = await fetch(
-    `${API_URL}/api/requests?${params.toString()}`
-  )
+  `${API_URL}/api/requests?${params.toString()}`,
+  { signal }
+)
 
   return handleResponse(response)
 }

@@ -1,124 +1,113 @@
-# \## Setup
+# Client Requests Dashboard
 
-# 
+A small internal dashboard for creating, viewing, filtering, and progressing client requests through `New`, `In Progress`, and `Done`.
 
-# \### Prerequisites
+## Tech stack
 
-# 
+- Frontend: React, Vite, React Router
+- Backend: ASP.NET Core 8 REST API
+- Database: PostgreSQL with Entity Framework Core
 
-# Make sure you have:
+## Project structure
 
-# 
+```text
+Frontend/                     React application
+Backend/ClientRequests/       ASP.NET Core API and EF Core migrations
+```
 
-# \- .NET 8 SDK
+## Prerequisites
 
-# \- Node.js and npm
+- .NET 8 SDK
+- Node.js and npm
+- PostgreSQL
 
-# \- PostgreSQL
+## Run the backend
 
-# 
+1. In a terminal, move to the API project:
 
-# \### Backend
+   ```bash
+   cd Backend/ClientRequests
+   ```
 
-# 
+2. Restore dependencies:
 
-# Go to the backend project:
+   ```bash
+   dotnet restore
+   ```
 
-# 
+3. Configure your local PostgreSQL connection string with User Secrets:
 
-# &#x20;   cd Backend/ClientRequests
+   ```bash
+   dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=ClientRequestsDb;Username=postgres;Password=YOUR_PASSWORD"
+   ```
 
-# 
+4. Apply the included database migrations:
 
-# Restore the dependencies:
+   ```bash
+   dotnet ef database update
+   ```
 
-# 
+5. Start the API:
 
-# &#x20;   dotnet restore
+   ```bash
+   dotnet run
+   ```
 
-# 
+The API is available at `http://localhost:5148`. Swagger is available at `http://localhost:5148/swagger` while running in Development.
 
-# Configure the PostgreSQL connection string using .NET User Secrets:
+## Run the frontend
 
-# 
+1. In a second terminal, move to the frontend:
 
-# &#x20;   dotnet user-secrets init
+   ```bash
+   cd Frontend
+   ```
 
-# &#x20;   dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=ClientRequestsDb;Username=postgres;Password=YOUR\_PASSWORD"
+2. Install dependencies:
 
-# 
+   ```bash
+   npm install
+   ```
 
-# Create/update the database using the included EF Core migrations:
+3. Copy `.env.example` to `.env`. Its local value should be:
 
-# 
+   ```env
+   VITE_API_URL=http://localhost:5148
+   ```
 
-# &#x20;   dotnet ef database update
+4. Start the development server:
 
-# 
+   ```bash
+   npm run dev
+   ```
 
-# Run the API:
+Open `http://localhost:5173` in your browser.
 
-# 
+## Demo login
 
-# &#x20;   dotnet run
+The login is mock authentication for this technical assessment only.
 
-# 
+- Email: `najahakworld@gmail.com`
+- Password: `najah123`
 
-# The API runs locally at:
+## API endpoints
 
-# 
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/requests` | Fetch paginated client requests; supports `page`, `pageSize`, and `status` query parameters. |
+| `POST` | `/api/requests` | Create a client request. |
+| `PATCH` | `/api/requests/{id}/status` | Move a request from `New` to `InProgress`, or from `InProgress` to `Done`. |
 
-# &#x20;   http://localhost:5148
+## Checks
 
-# 
+```bash
+cd Frontend
+npm run lint
+npm run build
+```
 
-# Swagger is available at:
-
-# 
-
-# &#x20;   http://localhost:5148/swagger
-
-# 
-
-# \### Frontend
-
-# 
-
-# Go to the frontend:
-
-# 
-
-# &#x20;   cd Frontend
-
-# 
-
-# Install dependencies:
-
-# 
-
-# &#x20;   npm install
-
-# 
-
-# Create a `.env` file based on `.env.example`:
-
-# 
-
-# &#x20;   VITE\_API\_URL=http://localhost:5148
-
-# 
-
-# Start React:
-
-# 
-
-# &#x20;   npm run dev
-
-# 
-
-# Open:
-
-# 
-
-# &#x20;   http://localhost:5173
+```bash
+cd Backend/ClientRequests
+dotnet build
+```
 

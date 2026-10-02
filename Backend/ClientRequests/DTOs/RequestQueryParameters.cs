@@ -1,19 +1,15 @@
 using ClientRequests.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace ClientRequests.DTOs;
 
 public class RequestQueryParameters
 {
-    private const int MaxPageSize = 100;
-    private int _pageSize = 20;
-
+    [Range(1, int.MaxValue)]
     public int Page { get; set; } = 1;
 
-    public int PageSize
-    {
-        get => _pageSize;
-        set => _pageSize = value > MaxPageSize ? MaxPageSize : value;
-    }
+    [Range(1, 100)]
+    public int PageSize { get; set; } = 20;
 
     public RequestStatus? Status { get; set; }
 }
